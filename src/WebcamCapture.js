@@ -1,10 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import Webcam from "react-webcam";
 import styled from "styled-components";
+import ToggleCam from "./ToggleCam";
 
 const CamWrap = styled.div`
   position: relative;
-  border: 2px solid red;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,8 +22,9 @@ const CardBorder = styled.div`
 const WebcamCapture = ({ className }) => {
   const webcamRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
+  const [deviceId, setDeviceId] = useState("default");
 
-  const capture = React.useCallback(() => {
+  const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImgSrc(imageSrc);
   }, [webcamRef, setImgSrc]);
@@ -37,9 +38,11 @@ const WebcamCapture = ({ className }) => {
           mirrored
           ref={webcamRef}
           screenshotFormat="image/jpeg"
+          videoConstraints={{ deviceId }}
         />
-        <CardBorder />
+        <CardBorder onClick={capture} />
       </CamWrap>
+      <ToggleCam onSelectDevice={(v) => setDeviceId(v)} />
       <button onClick={capture}>Capture photo</button>
       {imgSrc && <img alt="pic" src={imgSrc} />}
     </>
